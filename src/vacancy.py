@@ -1,36 +1,26 @@
+import re
+
+
 class Vacancy:
     """
     Класс, представляющий вакансию.
     """
 
-    def __init__(self, title: str, url: str, salary: str, description: str):
-        """
-        Инициализирует вакансию с заданными параметрами.
-        Название вакансии
-        Ссылка на вакансию
-        З/п
-        Описание вакансии
-        """
+    def __init__(self, title: str, url: str, salary: dict, description: str):
         self.title = title
         self.url = url
         self.salary = salary
         self.description = description
 
     def __str__(self):
-        """
-        Возвращает строковое представление вакансии.
+        salary_from = self.salary.get('from') if self.salary else None
+        salary_to = self.salary.get('to') if self.salary else None
+        salary_currency = self.salary.get('currency') if self.salary else None
+        salary_str = f"{salary_from} - {salary_to} {salary_currency}" if salary_from and salary_to else "Не указана"
+        return f"{self.title} - {salary_str}\n{self.url}\n{self.description}"
 
-        """
-        return f"{self.title} - {self.salary}\n{self.url}\n{self.description}"
+    def get_salary(self):
+        return self.salary.get('from') if self.salary and self.salary.get('from') else 0
 
-    def __lt__(self, other):
-        """
-        Сравнивает вакансии по зарплате (меньше).
-        """
-        return self.salary < other.salary
-
-    def __gt__(self, other):
-        """
-        Сравнивает вакансии по зарплате (больше).
-        """
-        return self.salary > other.salary
+    def clean_description(self, description: str) -> str:
+        return re.sub(r'<highlighttext>|</highlighttext>', '', description)
