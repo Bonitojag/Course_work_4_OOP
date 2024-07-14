@@ -3,8 +3,8 @@ import requests
 
 class JobAPI(ABC):
     """
-    Абстрактный класс для работы с API вакансий.
-    Определяет метод get_vacancies, который должен быть реализован в подклассах.
+    РђР±СЃС‚СЂР°РєС‚РЅС‹Р№ РєР»Р°СЃСЃ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ API РІР°РєР°РЅСЃРёР№.
+    РћРїСЂРµРґРµР»СЏРµС‚ РјРµС‚РѕРґ get_vacancies, РєРѕС‚РѕСЂС‹Р№ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ СЂРµР°Р»РёР·РѕРІР°РЅ РІ РїРѕРґРєР»Р°СЃСЃР°С….
     """
     @abstractmethod
     def get_vacancies(self, search_query: str):
@@ -12,8 +12,8 @@ class JobAPI(ABC):
 
 class HeadHunterAPI(JobAPI):
     """
-    Класс для работы с API hh.ru.
-    Реализует метод get_vacancies для получения вакансий с hh.ru.
+    РљР»Р°СЃСЃ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ API hh.ru.
+    Р РµР°Р»РёР·СѓРµС‚ РјРµС‚РѕРґ get_vacancies РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РІР°РєР°РЅСЃРёР№ СЃ hh.ru.
     """
     def __init__(self):
         self.url = "https://api.hh.ru/vacancies"
