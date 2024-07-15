@@ -58,7 +58,16 @@ class JSONSaver(VacancyStorage):
         Получает вакансии из JSON-файла по заданным критериям.
         """
         data = self._load_data()
-        return [Vacancy(**item) for item in data]
+        filtered_vacancies = []
+        for item in data:
+            vacancy = Vacancy(**item)
+            if criteria['title'].lower() in vacancy.title.lower():
+                salary_from = vacancy.salary.get('from') if vacancy.salary else 0
+                salary_to = vacancy.salary.get('to') if vacancy.salary else float('inf')
+                if (salary_from is None or salary_from >= criteria['salary_from']) and (
+                        salary_to is None or salary_to <= criteria['salary_to']):
+                    filtered_vacancies.append(vacancy)
+        return filtered_vacancies
 
     def delete_vacancy(self, vacancy: Vacancy):
         """
@@ -72,15 +81,15 @@ class JSONSaver(VacancyStorage):
         """
         Загружает данные из JSON-файла.
         """
-        try:
-            with open(self.filename, 'r') as file:
-                return json.load(file)
-        except FileNotFoundError:
+        with open(self.filename, 'r', encoding='utf-8') as file:
+            content = file.read().strip()
+            if content:
+                return json.loads(content)
             return []
 
     def _save_data(self, data):
         """
         Сохраняет данные в JSON-файл.
         """
-        with open(self.filename, 'w') as file:
+        with open(self.filename, 'w', encoding='utf-8') as file:
             json.dump(data, file, ensure_ascii=False, indent=4)
