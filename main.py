@@ -14,11 +14,17 @@ def user_interaction():
     salary_range = input("Введите диапазон заработной платы : ")
     top_n = int(input("Введите количество вакансий для вывода в топ N: "))
 
-    if '-' in salary_range:
-        salary_from, salary_to = map(int, salary_range.split('-'))
+    if salary_range:
+        if '-' in salary_range:
+            salary_from, salary_to = map(int, salary_range.split('-'))
+        else:
+            salary_from = int(salary_range)
+            salary_to = float('inf')
     else:
-        salary_from = int(salary_range)
+        salary_from = 0
         salary_to = float('inf')
+
+
 
     hh_vacancies = hh_api.get_vacancies(search_query)
     vacancies_list = [Vacancy(item['name'], item['alternate_url'], item['salary'], item['snippet']['requirement']) for
