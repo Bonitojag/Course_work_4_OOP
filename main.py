@@ -1,6 +1,8 @@
+from src.vacancy import Vacancy
 from src.api import HeadHunterAPI
 from src.storage import JSONSaver
-from src.vacancy import Vacancy
+from src.utils import parse_salary_range
+
 
 def user_interaction():
     """
@@ -8,27 +10,24 @@ def user_interaction():
     Позволяет вводить поисковый запрос, получать вакансии с hh.ru, сохранять их в JSON-файл и выводить на экран.
     """
     hh_api = HeadHunterAPI()
-    json_saver = JSONSaver('vacancies.json')
+    json_saver = JSONSaver()
 
     search_query = input("Введите название профессии или вакансии: ")
-    salary_range = input("Введите диапазон заработной платы : ")
+    salary_range = input("Введите диапазон заработной платы: ")
     top_n = int(input("Введите количество вакансий для вывода в топ N: "))
 
-    if salary_range:
-        if '-' in salary_range:
-            salary_from, salary_to = map(int, salary_range.split('-'))
-        else:
-            salary_from = int(salary_range)
-            salary_to = float('inf')
-    else:
-        salary_from = 0
-        salary_to = float('inf')
-
-
+    salary_from, salary_to = parse_salary_range(salary_range)
 
     hh_vacancies = hh_api.get_vacancies(search_query)
-    vacancies_list = [Vacancy(item['name'], item['alternate_url'], item['salary'], item['snippet']['requirement']) for
-                      item in hh_vacancies['items'] if search_query.lower() in item['name'].lower()]
+
+    # Проверяем, что возвращенные данные являются списком
+    if not isinstance(hh_vacancies, list):
+        print("Ошибка: Неверный формат данных от API")
+        return
+
+    vacancies_list = [
+        Vacancy(item['name'], item['alternate_url'], item['salary'], item.get('snippet', {}).get('requirement', '')) for
+        item in hh_vacancies]
 
     for vacancy in vacancies_list:
         json_saver.add_vacancy(vacancy)
@@ -50,3 +49,17 @@ def user_interaction():
 
 if __name__ == "__main__":
     user_interaction()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
